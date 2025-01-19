@@ -18,7 +18,6 @@ public class Solution {
     // Set<Integer> nodeVals = new HashSet();
     Set<ListNode> nodes = new HashSet();
 
-
     public boolean hasCycle(ListNode head) {
         if(head == null){
             return false;
