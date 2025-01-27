@@ -1,67 +1,110 @@
 class Twitter {
-    /*
-    누가 어떤 아이디로 글을 썼고
-    누가 누구를 팔로우 하고
-    사용자가 팔로우 하는 사람들의 글 목록을 보여주고
-     */
 
-    Map<Integer, Set<Integer>> relations;
-    List<Tweet> tweets;
+    static int timeStamp = 0;
+    Map<Integer, User> userMap;
 
-    class Tweet {
+    public class User {
 
-      Integer userId;
-      Integer postId;
+      int id;
+      Set<Integer> followed;
+      Tweet headTweet;
 
-      Tweet(Integer userId, Integer postId) {
-        this.userId = userId;
-        this.postId = postId;
+      User(int id) {
+        this.id = id;
+        this.followed = new HashSet<>();
+        follow(id);
+        headTweet = null;
+      }
+
+      void follow(int id) {
+        followed.add(id);
+      }
+
+      void unfollow(int id) {
+        followed.remove(id);
+      }
+
+      void post(int id) {
+        Tweet tweet = new Tweet(id);
+        tweet.next = headTweet;
+        headTweet = tweet;
+      }
+    }
+
+    public class Tweet {
+
+      int id;
+      int time;
+      Tweet next;
+
+      Tweet(int id) {
+        this.id = id;
+        this.time = timeStamp++;
+        this.next = null;
       }
     }
 
     public Twitter() {
-      tweets = new LinkedList<>();
-      relations = new HashMap<>();
+      this.userMap = new HashMap<>();
     }
 
     public void postTweet(int userId, int tweetId) {
-      tweets.add(0,new Tweet(userId, tweetId));
-
+      if(!userMap.containsKey(userId)){
+			User u = new User(userId);
+			userMap.put(userId, u);
+		}
+		userMap.get(userId).post(tweetId);
     }
 
     public List<Integer> getNewsFeed(int userId) {
-      List<Integer> tweetIds = new ArrayList<>();
-      Set<Integer> follower = relations.get(userId);
-      for (Tweet tweet : tweets) {
-        if (tweetIds.size() == 10) {
-          break;
-        }
-        if (follower != null && follower.contains(tweet.userId)) {
-          tweetIds.add(tweet.postId);
-        } else if (tweet.userId == userId) {
-          tweetIds.add(tweet.postId);
+      if (!userMap.containsKey(userId)) {
+        return Collections.emptyList();
+      }
+
+      Set<Integer> followed = userMap.get(userId).followed;
+      PriorityQueue<Tweet> queue = new PriorityQueue<>(followed.size(), (a, b) -> (b.time - a.time));
+      for (Integer followerId : followed) {
+        Tweet tweet = userMap.get(followerId).headTweet;
+
+        if (tweet != null) {
+          queue.add(tweet);
         }
       }
-      return tweetIds;
+
+      int count = 0;
+      List<Integer> results = new ArrayList<>();
+      while (!queue.isEmpty() && count < 10) {
+        Tweet poll = queue.poll();
+
+        results.add(poll.id);
+        count++;
+        if (poll.next != null) {
+          queue.add(poll.next);
+        }
+      }
+
+      return results;
+
     }
 
     public void follow(int followerId, int followeeId) {
-      if (!relations.containsKey(followerId)) {
-        Set<Integer> follower = new HashSet<>();
-        follower.add(followeeId);
-        relations.put(followerId, follower);
-      } else {
-        Set<Integer> follower = relations.get(followerId);
-        follower.add(followeeId);
+      if (!userMap.containsKey(followerId)) {
+        userMap.put(followerId, new User(followerId));
       }
+      if (!userMap.containsKey((followeeId))) {
+        userMap.put(followeeId, new User(followeeId));
+      }
+      userMap.get(followerId).follow(followeeId);
+
     }
 
     public void unfollow(int followerId, int followeeId) {
-      if (relations.containsKey(followerId)) {
-        Set<Integer> follower = relations.get(followerId);
-        follower.remove(followeeId);
+      if (!userMap.containsKey(followerId)) {
+        return;
       }
+      userMap.get(followerId).unfollow(followeeId);
     }
+
 }
 
 /**
