@@ -1,32 +1,20 @@
-import java.util.HashSet;
-
 class Solution {
-    public int lengthOfLongestSubstring(String input) {
-        int maxSize = 0;
-    for (int i = 0; i < input.length(); i++) {
-      HashSet<String> strings = new HashSet<>();
-      strings.add(String.valueOf(input.charAt(i)));
+    public int lengthOfLongestSubstring(String s) {
+        Set<Character> charSet = new HashSet<>();
+        int left = 0;
+        int maxLength = 0;
 
-      for (int j = i + 1; j < input.length(); j++) {
-        String pickString = String.valueOf(input.charAt(j));
-        if (strings.contains(pickString)) {
-          if (maxSize < strings.size()) {
-            maxSize = strings.size();
-          }
-            break;
+        for(int right = 0; right < s.length(); right++){
+            // 직전 계산 다 지우기
+            while(charSet.contains(s.charAt(right))){
+                charSet.remove(s.charAt(left));
+                left++;
+            }
+
+            charSet.add(s.charAt(right));
+            maxLength = Math.max(maxLength, right - left + 1);
         }
-        strings.add(pickString);
-      }
-        
 
-        if (maxSize < strings.size()) {
-        maxSize = strings.size();
-      }
-        
-    }
-    if (maxSize == 0 && input.length() > 0) {
-      return input.length();
-    }
-    return maxSize;
+        return maxLength;
     }
 }
