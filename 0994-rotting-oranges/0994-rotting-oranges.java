@@ -1,48 +1,45 @@
 class Solution {
     public int orangesRotting(int[][] grid) {
-        // if(grid == null || grid.length == 0) return -1;
+        Queue<int[]> queue = new LinkedList<>();
 
+        int freshCount = 0;
         for(int i=0 ; i<grid.length ; i++){
             for(int j=0 ; j<grid[0].length ; j++){
                 if(grid[i][j] == 2){
-                    dfs(grid, i, j, 2);
+                    queue.add(new int[]{i, j});
+                }else if(grid[i][j] == 1){
+                    freshCount++;
                 }
             }
         }
-        
-        int minute = 2;
-        for(int i=0 ; i<grid.length ; i++){
-            for(int j=0 ; j<grid[0].length ; j++){
-                if(grid[i][j] == 1){
-                    return -1;
+        if(freshCount == 0) return 0;
+
+        int[][] directions = new int[][]{{1,0}, {-1,0}, {0,1}, {0,-1}};
+        int rows = grid.length, cols = grid[0].length;
+        int minutes = -1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            minutes++;
+            
+            for (int i = 0; i < size; i++) {
+                int[] point = queue.poll();
+                int x = point[0], y = point[1];
+                
+                for (int[] d : directions) {
+                    int newX = x + d[0], newY = y + d[1];
+                    
+                    if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && grid[newX][newY] == 1) {
+                        grid[newX][newY] = 2; // 오렌지를 썩게 만듦
+                        queue.add(new int[]{newX, newY});
+                        freshCount--;
+                    }
                 }
-                minute = Math.max(minute, grid[i][j]);
             }
         }
 
-        return minute - 2;
-    }
-
-    private void dfs(int[][] grid, int i, int j, int minute){
-        if(
-            i < 0 || j < 0 ||
-            i >=grid.length || j >= grid[0].length ||
-            grid[i][j] == 0 ||
-            (1 < grid[i][j] && grid[i][j] < minute)
-        ){
-            return;
+        if(freshCount != 0){
+            return -1;
         }
-
-        grid[i][j] = minute;
-
-        dfs(grid, i-1, j, minute + 1);
-        dfs(grid, i+1, j, minute + 1);
-        dfs(grid, i, j-1, minute + 1);
-        dfs(grid, i, j+1, minute + 1);
+        return minutes;
     }
 }
-/*
-2 1 1
-0 1 1
-1 0 1
-*/
