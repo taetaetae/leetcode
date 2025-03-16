@@ -1,28 +1,31 @@
 class Solution {
-    public boolean wordBreak(String s, List<String> wordDict) {
-        // Map<String, Boolean> visitMap = new HashMap<>();
-        Set<Integer> visitFailSets = new HashSet<>();
-        return dfs(s, wordDict, visitFailSets, 0);
-    }
+    public boolean wordBreak(String s, List<String> wordDict) {  
+        boolean[] dp = new boolean[s.length()+1];
 
-    private boolean dfs(String s, List<String> wordDict, Set<Integer> visitFailSets, int index){
-        if(visitFailSets.contains(index)){
-            return false;
-        }
-        if(index == s.length()){
-            return true;
-        }
+        dp[0] = true;
 
-        for(int i=index+1; i<=s.length() ; i++){
-            String prefix = s.substring(index, i);
-            if(wordDict.contains(prefix)){
-                if(dfs(s, wordDict, visitFailSets, i)){
-                    return true;
+        for(int i=1 ; i<=s.length() ; i++){
+            for(int j=0 ; j< i ; j++){
+                if(dp[j] && wordDict.contains(s.substring(j,i))){
+                    dp[i] = true;
+                    break;
                 }
-                visitFailSets.add(i);
             }
         }
-        visitFailSets.add(index);
-        return false;
+
+        return dp[s.length()];
+
+        // for(int i=1 ; i<dp.length ; i++){
+        //     for(String word: wordDict){
+        //         int start = i-word.length() <= 0 ? 0 : i-word.length();
+        //         if(s.substring(start, i) == word){
+        //             dp[i] = dp[i - word.length()];
+        //         }
+        //         if(dp[i]){
+        //             break;
+        //         }
+        //     }
+        // }
+        // return dp[dp.length-1];        
     }
 }
