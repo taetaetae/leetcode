@@ -1,20 +1,41 @@
-public class Solution {
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
     public List<Integer> rightSideView(TreeNode root) {
-        List<Integer> result = new ArrayList<Integer>();
-        rightView(root, result, 0);
-        return result;
-    }
-    
-    public void rightView(TreeNode curr, List<Integer> result, int currDepth){
-        if(curr == null){
-            return;
+        List<Integer> results = new ArrayList<>();
+        if(root == null){
+            return results;
         }
-        if(currDepth == result.size()){
-            result.add(curr.val);
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            TreeNode current = null;
+            for(int i=0 ; i<size ; i++){
+                current = queue.poll();
+                if(current.left != null){
+                    queue.add(current.left);
+                }
+                if(current.right != null){
+                    queue.add(current.right);
+                }
+            }
+            results.add(current.val);
         }
-        
-        rightView(curr.right, result, currDepth + 1);
-        rightView(curr.left, result, currDepth + 1);
-        
+        return results;
     }
 }
