@@ -20,13 +20,20 @@ class Solution {
             }
         }
         System.out.println("---");
+        if(pq.isEmpty()){
+            return null;
+        }
 
         ListNode currentNode = pq.poll();
+        System.out.println(currentNode.val);
+
         ListNode resultNode = currentNode;
         while(!pq.isEmpty()){
             currentNode.next = pq.poll();
             currentNode = currentNode.next;
+              System.out.println(currentNode.val);
         }
+        currentNode.next = null;
         return resultNode;
     }
 }
