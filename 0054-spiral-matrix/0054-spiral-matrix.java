@@ -6,24 +6,25 @@ class Solution {
         }
         int rowMin = 0, rowMax = matrix.length - 1;
         int colMin = 0, colMax = matrix[0].length - 1;
+        int totalCount = matrix.length * matrix[0].length;
 
         while(rowMin <= rowMax && colMin <= colMax){
-            for(int i=colMin; i<=colMax; i++){
+            for(int i=colMin; i<=colMax && results.size() < totalCount; i++){
                 results.add(matrix[rowMin][i]);
             }
             rowMin++;
-            for(int i=rowMin; i<=rowMax; i++){
+
+            for(int i=rowMin; i<=rowMax && results.size() < totalCount; i++){
                 results.add(matrix[i][colMax]);
             }
             colMax--;
             
-            if(rowMin > rowMax || colMin > colMax) break;
 
-            for(int i=colMax; i>=colMin; i--){
+            for(int i=colMax; i>=colMin && results.size() < totalCount; i--){
                 results.add(matrix[rowMax][i]);
             }
             rowMax--;
-            for(int i=rowMax; i>=rowMin; i--){
+            for(int i=rowMax; i>=rowMin && results.size() < totalCount; i--){
                 results.add(matrix[i][colMin]);
             }
             colMin++;
